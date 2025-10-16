@@ -1,21 +1,15 @@
 # netlify.toml
 
 [build]
-  # Mini Appው የሚሰራበት ፎልደር (root directory)
   publish = "/"
-  # ለFunctions የሚሆን የ Build ትዕዛዝ
   command = "echo 'Netlify build starting'"
 
-# የ Netlify Functions ቅንብር
 [functions]
-  # Functions የሚገኙበት ፎልደር
   directory = "netlify"
-  # የ Node.js ስሪት (አዲስ እንዲሆን ይመከራል)
-  node_version = "18"
+  node_bundler = "esbuild"
+  node_version = 18
 
-# ከ Mini App የሚመጣ ጥያቄ ወደ Functionዎ የሚመራ Redirect Rule
 [[redirects]]
-  # /api/save-score የሚመስል መንገድ ቢጠቀሙ ይመረጣል (አሁን ላለው ግን ይህን እንጠቀም)
   from = "/.netlify/functions/tbot_handler"
   to = "/.netlify/functions/tbot_handler"
   status = 200
