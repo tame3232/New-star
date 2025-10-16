@@ -1,13 +1,18 @@
+
 # netlify.toml
 
 [build]
   publish = "/"
   command = "echo 'Netlify build starting'"
 
+# የ Functions ቅንብር
 [functions]
   directory = "netlify"
   node_bundler = "esbuild"
-  node_version = 18
+
+  [functions.node_bundler]
+    external_node_modules = []
+    node_version = "18"
 
 [[redirects]]
   from = "/.netlify/functions/tbot_handler"
