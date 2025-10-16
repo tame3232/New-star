@@ -1,0 +1,25 @@
+# .gitignore
+
+#
+
+# 1 . የደህንነት እና ሚስጥራዊ ቁልፎች (ይህ Firebase ৯৭ ১০!)
+
+#
+
+netlify/telegram-app-key.json
+
+#
+
+# 2. በራስ-ሰር የሚመነጩ እና አላስፈላጊ ፎልደሮች / ፋይሎች
+
+#
+
+node_modules/
+
+# ሌሎች በ Node.js የሚመነጩ ፋይሎች
+
+npm-debug.log
+
+.DS_Store
+
+አስፈላጊ ማሳሰቢያ
