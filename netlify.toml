@@ -1,47 +1,22 @@
-# Netlify.toml
+# netlify.toml
 
-# =========================================================================
-# 1. የ BUILD ቅንብሮች (Static Frontend/index.html ለማዘጋጀት)
-# =========================================================================
 [build]
-  # ምንም አይነት የግንባታ ትዕዛዝ (Build command) ከሌለዎት ባዶ ማስቀመጥ ይቻላል።
-  # (HTML/CSS/JS ብቻ ከሆነ)
-  command = "echo 'Static files ready for deploy'"
-  
-  # የእርስዎ index.html እና ሌሎች የ Frontend ፋይሎች የሚገኙበት ፎልደር።
-  # ሁሉም ፋይሎች በፕሮጀክቱ ዋናው ፎልደር ላይ ከሆኑ፣ '.' ይጠቀሙ።
-  # ፋይሎችዎ በ 'dist' ወይም 'public' ውስጥ ከሆኑ የዚያን ፎልደር ስም ያስገቡ።
-  publish = "." 
+  # Mini Appው የሚሰራበት ፎልደር (root directory)
+  publish = "/"
+  # ለFunctions የሚሆን የ Build ትዕዛዝ
+  command = "echo 'Netlify build starting'"
 
-# =========================================================================
-# 2. የ FUNCTIONS ቅንብሮች (Serverless Backend)
-# =========================================================================
+# የ Netlify Functions ቅንብር
 [functions]
-  # የእርስዎ Netlify Function ፋይል (tbot_handler.js) የሚገኝበት ፎልደር ስም።
-  # እርስዎ በሰጡት መሰረት "netlify" የሚለው ፎልደር ነው።
+  # Functions የሚገኙበት ፎልደር
   directory = "netlify"
-  
-  # የ Node.js ስሪት (አማራጭ፡ ለተሻለ ተኳኋኝነት)
-  node_bundler = "esbuild"
+  # የ Node.js ስሪት (አዲስ እንዲሆን ይመከራል)
   node_version = "18"
 
-# =========================================================================
-# 3. REDIRECTS እና REWRITES (ለ API ጥሪዎች)
-# =========================================================================
-
-# ከ Frontend የመጡ API ጥያቄዎችን ወደ Netlify Function ለመምራት።
-# (ይህ በጣም ወሳኝ ነው!)
-# Frontend ኮድዎ /api/score ወይም /api/add-score በሚል ሲጠራ፣
-# Netlify ወደ .netlify/functions/tbot_handler ይለውጠዋል (በውስጥ)።
+# ከ Mini App የሚመጣ ጥያቄ ወደ Functionዎ የሚመራ Redirect Rule
 [[redirects]]
-  # Frontend የሚጠራው አድራሻ
-  from = "/api/add-score" 
-  
-  # የሚመራበት የ Function መንገድ
-  to = "/.netlify/functions/tbot_handler" 
-  
-  # ለተጠቃሚው የማይታይ የውስጥ መምራት (Internal rewrite)
-  status = 200 
-  
-  # የሚፈቀደው ዘዴ (Method)
+  # /api/save-score የሚመስል መንገድ ቢጠቀሙ ይመረጣል (አሁን ላለው ግን ይህን እንጠቀም)
+  from = "/.netlify/functions/tbot_handler"
+  to = "/.netlify/functions/tbot_handler"
+  status = 200
   force = true
