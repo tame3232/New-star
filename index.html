@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>የዕለታዊ ተግባራት መተግበሪያ - ቋሚ ነጥብ</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        /* ========================================= */
+        /* የ CSS ቅጦች (Styling) - ሳይቀየር ይቀራል */
+        /* ========================================= */
+
+        :root {
+            --et-yellow: #FFC107;
+            --et-green: #4CAF50;
+            --et-purple: #9C27B0;
+            --et-red: #F44336;
+            --et-blue: #2196F3;
+        }
+
+        body {
+            background-color: var(--tg-theme-bg-color, #212121);
+            color: var(--tg-theme-text-color, #FFFFFF);
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        #root {
+            min-height: 100vh;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .header-title-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .main-title {
+            color: var(--tg-theme-text-color);
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        /* --- የጊዜ ቆጣሪ --- */
+        .time-counter-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .time-box {
+            background-color: #383838;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 5px;
+        }
+
+        .time-box span {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .colon {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0 2px;
+        }
+
+        /* --- ዕለታዊ ተግባራት አዝራሮች --- */
+        .daily-tasks-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .task-button {
+            flex: 1;
+            padding: 20px 0;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            font-size: 16px;
+            color: #212121;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .daily-badge {
+            position: absolute;
+            top: -10px;
+            right: -5px;
+            background-color: var(--et-red);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        /* --- የካርድ አዝራሮች --- */
+        .card-button {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: left;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            background-color: white;
+            color: #212121;
+        }
+
+        .card-button.dark {
+            background-color: #424242;
+            color: white;
+        }
+
+        .card-icon-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 20px;
+        }
+        
+        .card-button:nth-child(1) .card-icon-circle { background-color: var(--et-red); }
+        .card-button:nth-child(2) .card-icon-circle { background-color: var(--et-blue); }
+        .card-button:nth-child(3) .card-icon-circle { background-color: var(--et-purple); }
+
+        .card-text-container {
+            flex: 1;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 3px;
+            color: inherit;
+        }
+
+        .card-button.dark .card-subtitle {
+            color: #BDBDBD;
+        }
+        
+        .card-subtitle {
+            font-size: 12px;
+            color: gray;
+        }
+
+        .arrow-icon {
+            font-size: 24px;
+            color: var(--et-red);
+            margin-left: 10px;
+        }
+
+        /* --- የእንኳን ደህና መጡ ካርድ --- */
+        .welcome-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #383838;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .welcome-card-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .welcome-icon-circle {
+            background-color: var(--et-yellow);
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .welcome-title {
+            color: white;
+            font-weight: bold;
+        }
+
+        .welcome-subtitle {
+            color: #BDBDBD;
+            font-size: 12px;
+        }
+
+        button {
+            font-family: inherit;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        // =========================================
+        // የ JavaScript ሎጂክ
+        // =========================================
+
+        const WebApp = window.Telegram.WebApp;
+
+        // የኢትዮጵያ ቀለም (Constants)
+        const ET_GREEN = '#4CAF50';
+        const ET_YELLOW = '#FFC107';
+
+        // ለነጥብ ማሳያ የሚሆን አለም አቀፍ ተለዋዋጭ
+        let currentScore = 0; 
+        
+        // **********************************************
+        // 1. Backend (Netlify Function) ውህደት Logic
+        // **********************************************
+        
+        // ነጥብ ወደ ኔትሊፋይ ተግባር ለመላክ
+        async function saveScoreToBackend(scoreToAdd) {
+            // ከቴሌግራም የተጠቃሚ መረጃን መውሰድ (ለማረጋገጥ)
+            const userData = WebApp.initDataUnsafe.user; 
+            
+            if (!userData) {
+                WebApp.showAlert('የተጠቃሚ መረጃ አልተገኘም! እባክዎ እንደገና ይሞክሩ።');
+                return false;
+            }
+
+            // የ POST ጥያቄ ወደ Netlify Function መላክ
+            try {
+                // ጥያቄው ወደ netlify/tbot_handler.js ይሄዳል (በ netlify.toml ላይ ባዋቀርነው መሰረት)
+                const response = await fetch('/.netlify/functions/tbot_handler', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: userData.id,      // የቴሌግራም መለያ
+                        username: userData.username,
+                        score: scoreToAdd         // የሚጨመረው ነጥብ
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // ነጥቡ ከተመዘገበ በኋላ አለም አቀፍ ተለዋዋጭን ማዘመን
+                    currentScore = data.newScore; 
+                    WebApp.showAlert(`ስጦታው ተቀብለዋል! አዲስ ነጥብዎ: ${data.newScore} 💰`);
+                    return true;
+                } else {
+                    WebApp.showAlert(`ነጥብ ማስቀመጥ አልተሳካም: ${data.message || 'ያልታወቀ ስህተት'}`);
+                    return false;
+                }
+            } catch (error) {
+                WebApp.showAlert('ከ Backend ጋር በመገናኘት ላይ ስህተት ተፈጠረ።');
+                console.error("Backend/Netlify Function ስህተት:", error);
+                return false;
+            }
+        }
+        
+        // ከአገልጋዩ ነጥቡን ለማግኘት (በእያንዳንዱ ጊዜ አፑ ሲከፈት)
+        async function fetchCurrentScore() {
+            const userData = WebApp.initDataUnsafe.user;
+            if (!userData) return;
+
+            try {
+                // ነጥቡን የሚጠይቅ API (ይህም በ tbot_handler.js ውስጥ መፈጠር አለበት)
+                // አሁን ባለው tbot_handler.js ውስጥ የ GET API ስለሌለ፣ POST API ን ለጊዜው እንጠቀማለን (ጥሩ ልማድ አይደለም)
+                // ለትክክለኛው ልማት፣ GET /api/score?userId=... የሚል Function ያስፈልጋል።
+                
+                // ለምሳሌያችን፣ ነጥቡን ከማዘመኛው API (POST) ጋር አብሮ እንደሚመጣ እንገምታለን፣ 
+                // ወይም እስኪዘመን ድረስ ነጥቡን ዜሮ (0) አድርገን እንጀምራለን።
+                
+                // በአሁኑ tbot_handler.js ውስጥ ነጥብን ብቻ የሚጠይቅ API ስለሌለ፣
+                // መተግበሪያው ለመጀመሪያ ጊዜ ሲከፈት ነጥቡን ዜሮ (0) አድርገን እንጀምራለን።
+                // ወይም:
+                
+                // ጊዜያዊ መፍትሄ፡ ከ Local Storage ማንበብ (የመጀመሪያውን ዋጋ ብቻ)
+                currentScore = parseInt(localStorage.getItem('tempInitialScore') || '0', 10);
+
+            } catch (e) {
+                console.error("የመጀመሪያ ነጥብ በማግኘት ላይ ስህተት:", e);
+            }
+        }
+        
+        // --- ንዑስ ኮምፖነንቶች (Sub-Components) ---
+
+        function TimeBox(value) { /* ... ሳይቀየር ይቀራል ... */ return `<div class="time-box"><span>${value}</span></div>`; }
+
+        function TaskButton(color, label, isDaily = false) {
+            // ተግባር ሲጫን ቋሚ ነጥብ ወደ Backend መላክ
+            return `
+                <button class="task-button" style="background-color: ${color};" onclick="handleTaskClick('${label}', 100);">${isDaily ? '<div class="daily-badge">Daily</div>' : ''}${label}</button>
+            `;
+        }
+        
+        // የተግባር ቁልፍ ሲጫን የሚሰራው
+        async function handleTaskClick(taskName, points) {
+            const success = await saveScoreToBackend(points);
+            if(success) {
+                // ነጥቡ ከተመዘገበ በኋላ ገጹን ማዘመን
+                renderApp();
+            }
+        }
+
+        function CardButton(icon, title, subtitle, isDark, onNavigate) { /* ... ሳይቀየር ይቀራል ... */
+            const darkClass = isDark ? 'dark' : '';
+            return `
+                <button 
+                    class="card-button ${darkClass}" 
+                    onclick="${onNavigate}">
+                    <div class="card-icon-circle">
+                        <span class="icon">${icon}</span>
+                    </div>
+                    <div class="card-text-container">
+                        <div class="card-title">${title}</div>
+                        <div class="card-subtitle">${subtitle}</div>
+                    </div>
+                    <div class="arrow-icon">→</div>
+                </button>
+            `;
+        }
+
+        function WelcomeCard() {
+            // Main Buttonን ማዘጋጀት
+            const handleGiftClaim = async () => {
+                const scoreToAdd = 500;
+                const success = await saveScoreToBackend(scoreToAdd);
+
+                if (success) {
+                    WebApp.MainButton.hide(); 
+                    WebApp.MainButton.offClick(handleGiftClaim);
+                    renderApp(); // ነጥቡ ከተመዘገበ በኋላ ገጹን ማዘመን
+                }
+            };
+
+            WebApp.MainButton.setText(`ስጠኝ! (+500 ሳንቲም)`);
+            WebApp.MainButton.show();
+            WebApp.MainButton.setParams({
+                color: ET_GREEN,
+                text_color: '#FFFFFF'
+            });
+
+            WebApp.MainButton.onClick(handleGiftClaim);
+
+            return `
+                <div class="welcome-card">
+                    <div class="welcome-card-content">
+                        <div class="welcome-icon-circle">🎁</div>
+                        <div>
+                            <div class="welcome-title">ዕለታዊ ስጦታ</div>
+                            <div class="welcome-subtitle">አሁን ያለዎት ነጥብ: ${currentScore} 💰</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- ዋናው የማሳያ ተግባር (Main Render Function) ---
+        async function renderApp() {
+            // ቴሌግራም Mini Appን ማዘጋጀት
+            WebApp.ready(); 
+            WebApp.setHeaderColor('secondary_bg_color');
+            WebApp.BackButton.show();
+            WebApp.BackButton.onClick(() => WebApp.close()); 
+
+            // ነጥቡን ከ Backend ለመውሰድ የመጀመሪያ ጥሪ
+            // ይህ የሚሆነው ነጥቡን ለማስቀመጥ በሚደረገው ጥሪ ውስጥ ስለሆነ፣ 
+            // ገጹ መጀመሪያ ሲከፈት ነጥቡን ለማግኘት የተለየ GET API ያስፈልጋል።
+            // ለዚህ ምሳሌ፣ ገጹ ሲከፈት የማስቀመጫ API ን መጥራት አንችልም።
+            // ስለዚህ፣ ነጥቡን ከመጀመሪያው በፊት ለማግኘት **GET API** መፍጠር ያስፈልጋል።
+            
+            // የ GET API እስክንፈጥር ድረስ፣ ነጥቡን በትክክል ለማግኘት
+            // ገጹ ሲከፈት "0" (ወይም የመጨረሻው Local Storage ዋጋ) እናሳያለን።
+            await fetchCurrentScore(); 
+
+            const appContent = `
+                <div class="app-container">
+                    <div class="header-title-container">
+                        <h1 class="main-title">ዕለታዊ ተግባራት ዝርዝር</h1>
+                    </div>
+
+                    <p style="text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 10px;">
+                        ጠቅላላ ነጥብ: <span style="color: ${ET_YELLOW};">${currentScore} 💰</span>
+                    </p>
+                    
+                    <div class="time-counter-container">
+                        ${TimeBox('23')}
+                        <div class="colon">:</div>
+                        ${TimeBox('59')}
+                        <div class="colon">:</div>
+                        ${TimeBox('06')}
+                    </div>
+
+                    <div class="daily-tasks-container">
+                        ${TaskButton(ET_YELLOW, 'Scratch', true)}
+                        ${TaskButton(ET_GREEN, 'Streak')}
+                        ${TaskButton('#9C27B0', 'Lucky Box')}
+                    </div>
+
+                    ${CardButton( '🚀', 'ROAD 🚀 የተሻለውን መንገድ', 'በቀላሉ ትርፍ የሚያስገኝልዎትን የልማት መስመር መምረጥ ይችላሉ።', false, "WebApp.showAlert('ወደ ROAD ገጽ ይሂዱ')" )}
+                    
+                    ${CardButton( '🎮', 'GAME 🎮 አዳዲስ ጨዋታዎች', 'የተለያዩ አዝናኝ እና አትራፊ ጨዋታዎችን ይሞክሩ።', true, "WebApp.showAlert('ወደ ጨዋታዎች ገጽ በመሄድ ላይ...')" )}
+
+                    ${CardButton( '💡', '100X 💡 የጥበቃ ጥቆማዎች', 'በግንዛቤዎ ላይ መደፍረስ የሌለበትን መረጃዎችን ሰብስበን እናስቀምጥልዎታለን። (5/24 ሰዓት)', true, "WebApp.showAlert('ወደ 100X ገጽ ይሂዱ')" )}
+
+                    ${WelcomeCard()}
+                </div>
+            `;
+
+            document.getElementById('root').innerHTML = appContent;
+        }
+
+        // ገጹ ከተጫነ በኋላ የማሳያ ተግባርን መጥራት
+        window.onload = renderApp;
+    </script>
+</body>
+</html>
