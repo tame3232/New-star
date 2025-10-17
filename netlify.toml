@@ -1,9 +1,9 @@
 [build]
 publish = "/"
-command = "echo 'Netlify build starting'"
+command = "npm run build" # "echo 'Netlify build starting'" ወደ ትክክለኛው ትዕዛዝ መልሰናል
 
 [functions]
-directory = "netlify"  
+directory = "netlify/functions"  # ፋይልዎ የሚገኝበትን ትክክለኛ መንገድ ጠቁም።
 
 [[redirects]]
 from = "/.netlify/functions/tbot_handler"
