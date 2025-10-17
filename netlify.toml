@@ -1,15 +1,13 @@
-# netlify.toml
-
 [build]
-  publish = "/"
-  command = "echo 'Netlify build starting'"
+publish = "/"
+command = "echo 'Netlify build starting'"
 
 [functions]
-  directory = "netlify"
-  node_version = "18"
+directory = "netlify"
+node_version = "18"
 
 [[redirects]]
-  from = "/.netlify/functions/tbot_handler"
-  to = "/.netlify/functions/tbot_handler"
-  status = 200
-  force = true
+from = "/.netlify/functions/tbot_handler"
+to = "/.netlify/functions/tbot_handler"
+status = 200
+force = true
