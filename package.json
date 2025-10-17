@@ -2,7 +2,7 @@
   "name": "telegram-mini-app-persistent-score",
   "version": "1.0.0",
   "description": "Telegram Mini App with Netlify Functions for persistent score storage using Firebase Firestore.",
-  "main": "netlify/tbot_handler.js",
+  "main": "netlify/functions/tbot_handler.js",  <-- በትክክለኛው መንገድ ተስተካክሏል
   
   "scripts": {
     "start": "netlify dev", 
