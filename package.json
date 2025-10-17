@@ -21,18 +21,11 @@
   "license": "ISC",
   
   "dependencies": {
-    /* * ለ Netlify Function (netlify/tbot_handler.js) የሚያስፈልጉ ቤተ-መጻሕፍት 
-     * እነዚህ የ Backend Logic እንዲሰራ ወሳኝ ናቸው።
-     */
     "firebase-admin": "^11.5.0", 
     "node-fetch": "^3.3.0"      
   },
   
   "devDependencies": {
-    /*
-     * ልማት (Development) ላይ የሚጠቅሙ መሳሪያዎች
-     * Netlify ን በአካባቢዎ (local environment) ለመሞከር ይጠቅማል
-     */
     "netlify-cli": "^12.0.0" 
   }
 }
