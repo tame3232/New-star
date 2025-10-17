@@ -6,8 +6,6 @@
 
 [functions]
   directory = "netlify"
-  node_bundler = "esbuild"
-  external_node_modules = []
   node_version = "18"
 
 [[redirects]]
