@@ -6,7 +6,7 @@ command = "npm run build" # "echo 'Netlify build starting'" ወደ ትክክለ�
 directory = "netlify/functions"  # ፋይልዎ የሚገኝበትን ትክክለኛ መንገድ ጠቁም።
 
 [[redirects]]
-from = "/.netlify/functions/tbot_handler"
-to = "/.netlify/functions/tbot_handler"
+from = "/.netlify/functions/tbot_handler/tbot_handler.js"
+to = "/.netlify/functions/tbot_handler/tbot_handler.js"
 status = 200
 force = true
