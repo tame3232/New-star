@@ -1,0 +1,31 @@
+{
+  "name": "telegram-mini-app-persistent-score",
+  "version": "1.0.0",
+  "description": "Telegram Mini App with Netlify Functions for persistent score storage using Firebase Firestore.",
+  "main": "netlify/functions/tbot_handler.js/tbot_handler.js",  
+  
+  "scripts": {
+    "start": "netlify dev", 
+    "build": "echo 'Frontend build skipped - using static files'"
+  },
+  
+  "keywords": [
+    "telegram",
+    "mini-app",
+    "netlify",
+    "firebase",
+    "serverless"
+  ],
+  
+  "author": "Your Name or Company",
+  "license": "ISC",
+  
+  "dependencies": {
+    "firebase-admin": "^11.5.0", 
+    "node-fetch": "^3.3.0"      
+  },
+  
+  "devDependencies": {
+    "netlify-cli": "^12.0.0" 
+  }
+}
